@@ -11,11 +11,8 @@ const userSchema = mongoose.Schema(
       addressLineOne: { type: String },
       addressLineTwo: { type: String },
     },
-    role: { type: String },
   },
-  {
-    timeStamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userSchema);

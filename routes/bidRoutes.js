@@ -3,6 +3,6 @@ const { createBid, getAllBids } = require("../controllers/bidController");
 const router = express.Router();
 
 router.post("/", createBid); //private route
-router.get("/", getAllBids);
+router.get("/:id", getAllBids);
 
 module.exports = router;

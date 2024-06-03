@@ -1,5 +1,4 @@
 const SavedItems = require("../schemas/savedItemsSchema");
-const Listings = require("../schemas/listingsSchema");
 const newCustomError = require("../utils/newCustomError");
 
 //@desc create saved item
@@ -9,14 +8,7 @@ const newCustomError = require("../utils/newCustomError");
 const createSavedItem = async (req, res, next) => {
   try {
     const body = req.body;
-    const { auction } = req.body;
-    const createdSavedItem = await SavedItems.create(body);
-    const auctionInfo = await Listings.findOne({ _id: auction });
-
-    if (auctionInfo) {
-      createdSavedItem.auction = auctionInfo;
-    }
-
+    await SavedItems.create(body);
     req.status(201).send({
       message: "Auction saved successfully",
     });

@@ -1,5 +1,4 @@
 const Listings = require("../schemas/listingsSchema");
-const User = require("../schemas/userSchema");
 const newCustomError = require("../utils/newCustomError");
 
 //@desc create auction
@@ -8,17 +7,10 @@ const newCustomError = require("../utils/newCustomError");
 const createAuction = async (req, res, next) => {
   try {
     const auctionBody = req.body;
-    const { user } = req.body;
-
     const createdAuction = await Listings.create(auctionBody);
-    const userInfo = await User.findOne({ _id: user });
-    if (userInfo) {
-      createdAuction.user = userInfo;
-    }
-
     res.status(201).send({
       message: "Auction created successfully",
-      data: createdAuction,
+      data: { auctionId: createdAuction._id },
     });
   } catch (error) {
     next(error);
@@ -33,7 +25,28 @@ const getAllAuctions = async (req, res, next) => {
     const category = req.query.category || "";
     const filter = category ? { category } : {};
 
-    const allAuction = await Listings.find(filter);
+    const allAuction = await Listings.find(filter).populate("user");
+
+    res.status(200).send({
+      message: "All auction retrived",
+      data: allAuction,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+//@desc get all auction userwise (auction listed by user)
+//route GET/api/listings/:userId
+//access private
+const getUsersListings = async (req, res, next) => {
+  try {
+    const category = req.query.category || "";
+    const filter = category ? { category } : {};
+    const userId = req.params.userId;
+
+    const allAuction = await Listings.find({ user: userId }, filter).populate(
+      "user"
+    );
 
     res.status(200).send({
       message: "All auction retrived",
@@ -90,7 +103,7 @@ const updateAuction = async (req, res, next) => {
 
     res.status(200).send({
       message: "Auction data updated",
-      data: updatedAuction,
+      data: { auctionId: updatedAuction._id },
     });
   } catch (error) {
     next(error);
@@ -124,6 +137,7 @@ const deleteAuction = async (req, res, next) => {
 module.exports = {
   createAuction,
   getAllAuctions,
+  getUsersListings,
   getSingleAuction,
   updateAuction,
   deleteAuction,

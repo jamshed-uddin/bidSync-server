@@ -7,8 +7,8 @@ const listingsSchema = mongoose.Schema(
     description: { type: String, required: true },
     startingPrice: { type: Number, required: true },
     clossesIn: { type: Date, required: true },
-    heighestBid: { type: Number, default: 0 },
-    heighestBidder: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    highestBid: { type: Number, default: 0 },
+    highestBidder: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     category: { type: String, required: true },
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -16,7 +16,7 @@ const listingsSchema = mongoose.Schema(
       required: true,
     },
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Listing", listingsSchema);
