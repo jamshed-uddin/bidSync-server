@@ -6,8 +6,8 @@ const {
 } = require("../controllers/savedItemsController");
 const router = express.Router();
 
-router.post("/", createSavedItem);
-router.get("/", getAllSavedItems);
-router.delete("/:id", deleteSavedItem);
+router.post("/", createSavedItem); //private route
+router.get("/", getAllSavedItems); //private route
+router.delete("/:id", deleteSavedItem); //private route
 
 module.exports = router;

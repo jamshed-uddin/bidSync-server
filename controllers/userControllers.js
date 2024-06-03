@@ -1,4 +1,5 @@
 const User = require("../schemas/userSchema");
+const generateJwtToken = require("../utils/generateJwt");
 const newCustomError = require("../utils/newCustomError");
 
 //@desc create user
@@ -99,4 +100,24 @@ const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
-module.exports = { createUser, getSingleUser, updateUser, deleteUser };
+
+//@desc generate jwt token
+//route GET /api/user/generateJwtToken/:userEmail
+//access public
+const getJwtToken = async (req, res, next) => {
+  try {
+    const userEmail = req.params.userEmail;
+    const token = generateJwtToken(userEmail);
+    res.status(200).send({ token });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createUser,
+  getSingleUser,
+  updateUser,
+  deleteUser,
+  getJwtToken,
+};
