@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const listingsSchema = new Schema(
+const listingsSchema = mongoose.Schema(
   {
     title: { type: String, required: true },
     photoURL: [{ type: String }],
@@ -9,6 +9,7 @@ const listingsSchema = new Schema(
     clossesIn: { type: Date, required: true },
     heighestBid: { type: Number, default: 0 },
     heighestBidder: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    category: [{ type: String }],
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

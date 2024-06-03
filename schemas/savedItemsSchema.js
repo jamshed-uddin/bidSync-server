@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const savedItemsSchema = new Schema(
+const savedItemsSchema = mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,

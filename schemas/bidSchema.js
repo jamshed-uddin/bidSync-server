@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bidSchema = new Schema(
+const bidSchema = mongoose.Schema(
   {
     auctionId: { type: mongoose.Schema.Types.ObjectId, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, required: true },
