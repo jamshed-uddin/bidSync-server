@@ -9,7 +9,7 @@ const listingsSchema = mongoose.Schema(
     clossesIn: { type: Date, required: true },
     heighestBid: { type: Number, default: 0 },
     heighestBidder: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    category: [{ type: String }],
+    category: { type: String, required: true },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -19,4 +19,4 @@ const listingsSchema = mongoose.Schema(
   { timeStamps: true }
 );
 
-module.exports = mongoose.Schema("Listing", listingsSchema);
+module.exports = mongoose.model("Listing", listingsSchema);

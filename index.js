@@ -23,9 +23,9 @@ app.get("/", async (req, res) => {
 
 // api routers
 app.use("/api/user", userRoutes);
-// app.use("/api/listings", listingsRoutes);
-// app.use("/api/bids", bidRoutes);
-// app.use("/api/savedItems", savedItemsRoutes);
+app.use("/api/listings", listingsRoutes);
+app.use("/api/bids", bidRoutes);
+app.use("/api/savedItems", savedItemsRoutes);
 
 //error handler mids
 app.use(notFound);
