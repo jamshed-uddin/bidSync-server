@@ -51,9 +51,9 @@ yarn  install
 
 ### 3. Environment variables
 
-Create a `.env` file in the root directory with the following Firebase configuration:
+Create a `.env` file in the root directory with the following variables:
 
-    PORT=5000
+    PORT=port
     MONGO_URI=your_mongodb_cluster_uri
     JWT_SECRET=jwt_secret
 
