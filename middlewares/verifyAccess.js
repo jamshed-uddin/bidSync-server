@@ -5,7 +5,7 @@ const User = require("../schemas/userSchema");
 const verifyAccess = async (req, res, next) => {
   let token;
 
-  token = req.headers.authorization.split(" ")[1];
+  token = req.headers?.authorization?.split(" ")[1];
 
   if (token) {
     try {
