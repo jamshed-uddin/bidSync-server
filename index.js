@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDb();
 
 app.get("/", async (req, res) => {
-  res.send("welcome to auction server");
+  res.send("welcome to BidSync server");
 });
 
 // api routers
