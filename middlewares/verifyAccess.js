@@ -5,8 +5,8 @@ const User = require("../schemas/userSchema");
 const verifyAccess = async (req, res, next) => {
   let token;
 
-  token = req.headers?.authorization?.split(" ")[1];
-
+  token = req.headers?.authorization;
+  console.log("token", token);
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);

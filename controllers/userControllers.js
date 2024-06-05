@@ -12,7 +12,7 @@ const createUser = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (user) {
-      throw newCustomError(409, "User with this email already exists");
+      throw newCustomError(400, "User with this email already exists");
     }
 
     const newUser = await User.create({
