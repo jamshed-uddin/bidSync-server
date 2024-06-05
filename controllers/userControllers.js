@@ -30,14 +30,13 @@ const createUser = async (req, res, next) => {
 };
 
 //@desc single user
-//route GET /api/user:id
+//route GET /api/user/:email
 //access PRIVATE
 const getSingleUser = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const email = req.params.email;
 
-    const user = await User.findOne({ _id: id });
-    console.log(user);
+    const user = await User.findOne({ email });
 
     if (!user) {
       throw newCustomError(404, "User not found");
@@ -102,12 +101,13 @@ const deleteUser = async (req, res, next) => {
 };
 
 //@desc generate jwt token
-//route GET /api/user/generateJwtToken/:userEmail
+//route POST /api/user/generateJwtToken
 //access public
 const getJwtToken = async (req, res, next) => {
   try {
-    const userEmail = req.params.userEmail;
-    const token = generateJwtToken(userEmail);
+    const { email } = req.body;
+
+    const token = generateJwtToken(email);
     res.status(200).send({ token });
   } catch (error) {
     next(error);

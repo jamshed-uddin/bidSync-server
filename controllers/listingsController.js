@@ -7,7 +7,10 @@ const newCustomError = require("../utils/newCustomError");
 const createAuction = async (req, res, next) => {
   try {
     const auctionBody = req.body;
-    const createdAuction = await Listings.create(auctionBody);
+    const createdAuction = await Listings.create({
+      ...auctionBody,
+      user: req.user._id,
+    });
     res.status(201).send({
       message: "Auction created successfully",
       data: { auctionId: createdAuction._id },
@@ -23,9 +26,16 @@ const createAuction = async (req, res, next) => {
 const getAllAuctions = async (req, res, next) => {
   try {
     const category = req.query.category || "";
-    const filter = category ? { category } : {};
 
-    const allAuction = await Listings.find(filter).populate("user");
+    const filter = category
+      ? category === "all"
+        ? {}
+        : { category: new RegExp(category, "i") }
+      : {};
+
+    const allAuction = await Listings.find(filter)
+      .sort({ createdAt: -1 })
+      .populate("user");
 
     res.status(200).send({
       message: "All auction retrived",
@@ -36,12 +46,14 @@ const getAllAuctions = async (req, res, next) => {
   }
 };
 //@desc get all auction userwise (auction listed by user)
-//route GET/api/listings/:userId
+//route GET/api/listings/myListings/:userId
 //access private
 const getUsersListings = async (req, res, next) => {
   try {
     const category = req.query.category || "";
-    const filter = category ? { category } : {};
+    const filter = category
+      ? { category: new RegExp(`^${category}$`, "i") }
+      : {};
     const userId = req.params.userId;
 
     const allAuction = await Listings.find({ user: userId }, filter).populate(
@@ -134,6 +146,31 @@ const deleteAuction = async (req, res, next) => {
   }
 };
 
+//@desc search auction
+//route get/api/listings/search?q=''
+//access private
+
+const searchAuctions = async (req, res, next) => {
+  const searchQuery = req.query.q;
+
+  try {
+    if (searchQuery) {
+      const auctions = await Listings.find({
+        $or: [
+          { title: { $regex: new RegExp(searchQuery, "i") } },
+          { category: { $regex: new RegExp(searchQuery, "i") } },
+        ],
+      });
+
+      res.status(200).send({ message: "Query complete", data: auctions });
+    } else {
+      res.status(200).send({ message: "Query complete", data: [] });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createAuction,
   getAllAuctions,
@@ -141,4 +178,5 @@ module.exports = {
   getSingleAuction,
   updateAuction,
   deleteAuction,
+  searchAuctions,
 };

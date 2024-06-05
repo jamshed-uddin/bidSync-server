@@ -10,9 +10,9 @@ const newCustomError = require("../utils/newCustomError");
 const createBid = async (req, res, next) => {
   try {
     const body = req.body;
-    const { user, auctionId, amount } = req.body;
+    const { auctionId, amount } = req.body;
     const auctionInfo = await Listing.findOne({ _id: auctionId });
-    const userInfo = await User.findOne({ _id: user });
+    const userInfo = await User.findOne({ _id: req.user._id });
 
     if (!auctionInfo) {
       throw newCustomError(404, "Auction not found");
@@ -24,7 +24,7 @@ const createBid = async (req, res, next) => {
         "Biddng amount must be greater than last bid and starting price"
       );
     }
-    const createdBid = await Bids.create(body);
+    const createdBid = await Bids.create({ ...body, user: req.user._id });
 
     auctionInfo.highestBid = createdBid.amount;
     auctionInfo.highestBidder = createdBid.user;
@@ -51,9 +51,29 @@ const getAllBids = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const allBids = await Bids.find({ auctionId: id }).populate("user");
+    const allBids = await Bids.find({ auctionId: id })
+      .sort({ amount: -1 })
+      .populate("user");
     res.status(200).send({
       message: "All bids retrived",
+      data: allBids,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+//@desc get all bid  -user wise
+//route GET/api/bids/mybids/:id   id here is the user id
+//access public
+
+const getMyBids = async (req, res, next) => {
+  try {
+    const allBids = await Bids.find({ user: req.user._id }).populate(
+      "auctionId"
+    );
+
+    res.status(200).send({
+      message: "All bids user retrived",
       data: allBids,
     });
   } catch (error) {
@@ -64,4 +84,5 @@ const getAllBids = async (req, res, next) => {
 module.exports = {
   createBid,
   getAllBids,
+  getMyBids,
 };

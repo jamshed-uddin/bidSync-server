@@ -4,10 +4,11 @@ const {
   getAllSavedItems,
   deleteSavedItem,
 } = require("../controllers/savedItemsController");
+const { verifyAccess } = require("../middlewares/verifyAccess");
 const router = express.Router();
 
-router.post("/", createSavedItem); //private route
-router.get("/", getAllSavedItems); //private route
-router.delete("/:id", deleteSavedItem); //private route
+router.post("/", verifyAccess, createSavedItem); //private route
+router.get("/", verifyAccess, getAllSavedItems); //private route
+router.delete("/:id", verifyAccess, deleteSavedItem); //private route
 
 module.exports = router;

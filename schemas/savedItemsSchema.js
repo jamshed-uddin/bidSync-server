@@ -8,7 +8,7 @@ const savedItemsSchema = mongoose.Schema(
     },
     auction: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Listings",
+      ref: "Listing",
       required: true,
     },
   },
