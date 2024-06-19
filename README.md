@@ -76,34 +76,34 @@ JWT_SECRET=jwt_secret
    
     
 
-#### Register a new user
+#### 1. Register a new user
 - **URL:** `/api/users`
 - **Method:** `POST`
 -  **Access:** `Public`
 - **Description:**  
 > A public api to create new user that takes a object with email and password in request body.After succesfull registration, api response with a message of success and user data.
 
-#### Get a single user
+#### 2. Get a single user
 - **URL:** `/api/users/:email`
 - **Method:** `GET`
 -  **Access:** `Private`
 - **Description:**
 > A private api to get data of individual user that takes user email in params.After succesfull query in database, api responses with a message of  success and user data.
 
-#### Update user
+#### 3. Update user
 - **URL:** `/api/users/:id`
 - **Method:** `PATCH`
 -  **Access:** `Private`
 - **Description:**
 > A private api to update data of individual user that takes user id in params.After succesfull update of user in database, api responses with a message of  success and updated user data.
-#### Delete user
+#### 4. Delete user
 - **URL:** `/api/users/:id`
 - **Method:** `DELETE`
 -  **Access:** `Private`
 - **Description:**
 > A private api to delete user that takes user id in params.After succesfully delete user from database, api responses with a message of  successfull deletation.
 
-#### Generate jwt token
+#### 5. Generate jwt token
 - **URL:** `/api/user/generateJwtToken`
 - **Method:** `POST`
 -  **Access:** `Public`
@@ -132,27 +132,27 @@ JWT_SECRET=jwt_secret
      },
     
 
-#### Create a auction
+#### 1. Create a auction
 - **URL:** `/api/listings`
 - **Method:** `POST`
 -  **Access:** `Private`
 - **Description:**  
 > A private api to create new auction that takes a auction object in request body.After succesfull creation of the auction , api response with a message of success and auction data.
-#### Get all auctions
+#### 2. Get all auctions
 - **URL:** `/api/listings`
 - **Method:** `GET`
 -  **Access:** `Public`
 - **Description:**
 > A public api to get all auctions.After succesfull query in database, api responses with a message of  success and all auctions data.
 
-#### Get all auctions of an individual user
+#### 3. Get all auctions of an individual user
 - **URL:** `/api/myListings/:userId`
 - **Method:** `GET`
 -  **Access:** `Private`
 - **Description:**
 > A private api to get all auctions of an individual user. It queries data base by id of user.After succesfull query in database, api responses with a message of  success and all auctions  data.
 
-#### Get a single auction
+#### 4. Get a single auction
 - **URL:** `/api/listings/:id`
 - **Method:** `GET`
 -  **Access:** `Public`
@@ -160,20 +160,20 @@ JWT_SECRET=jwt_secret
 > A private api to get data of a single auction that takes auction id in params.After succesfull query in database, api responses with a message of  success and auction data.
 
 
-#### Search auctions
+#### 5. Search auctions
 - **URL:** `/api/listings/search?q=""`
 - **Method:** `GET`
 -  **Access:** `Public`
 - **Description:**
 > A public api to search auctions.After succesfull query in database, api responses with a message of  success and search result.
 
-#### Update auction 
+#### 6. Update auction 
 - **URL:** `/api/listings/:id`
 - **Method:** `PATCH`
 -  **Access:** `Private`
 - **Description:**
 > A private api to update auction data that takes data to update in request body.After succesfull update of course in database, api responses with a message of  success and updated auction data.
-#### Delete auction 
+#### 7. Delete auction 
 - **URL:** `/api/listings/:id`
 - **Method:** `DELETE`
 -  **Access:** `Private`
@@ -193,21 +193,21 @@ JWT_SECRET=jwt_secret
         amount: { type: Number, required: true },
       },
 
-#### Create bid
+#### 1. Create bid
 - **URL:** `/api/bids`
 - **Method:** `POST`
 -  **Access:** `Private`
 - **Description:**  
 > A private api to create bid. It takes auction id and amount in request body and responses with a message of success  and created bid.
 
-#### Get all bids of an auction
+#### 2. Get all bids of an auction
 - **URL:** `/api/bids/:id`
 - **Method:** `GET`
 -  **Access:** `Public`
 - **Description:**  
 > A Public api to get all bids of an auction. It takes auction id in params.After successfull query in database it responses with  a message of success  and bids data.
 
-#### Get all bids by an user
+#### 3. Get all bids by an user
 - **URL:** `/api/bids/mybids/:id`
 - **Method:** `GET`
 -  **Access:** `Private`
@@ -234,14 +234,14 @@ JWT_SECRET=jwt_secret
      },
    
     
-#### Save course
+#### 1. Save course
 - **URL:** `/api/savedItems`
 - **Method:** `POST`
 -  **Access:** `Private`
 - **Description:**  
 > A private api to save auctions. It takes course and userId in request body and responses with a message of success
 
-#### Get saved auctions of an individual user
+#### 2. Get saved auctions of an individual user
 - **URL:** `/api/savedItems`
 - **Method:** `GET`
 -  **Access:** `Private`
@@ -249,7 +249,7 @@ JWT_SECRET=jwt_secret
 - **Description:**
 > A private api to get all saved auctions of an individual user. It queries data base by id of user that comes from req.user. User in req.user set by auth middleware after succesfull token verification.After succesfull query in database, api responses with a message of  success and all auctions data.
 
-#### Delete saved auctions 
+#### 3. Delete saved auctions 
 - **URL:** `/api/savedItems/:id`
 - **Method:** `DELETE`
 -  **Access:** `Private`
