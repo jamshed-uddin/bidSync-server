@@ -256,6 +256,14 @@ JWT_SECRET=jwt_secret
 - **Description:**
 > A private api to delete auctions that takes auction id in params. It queries the database with auction id and user id from req.user and deletes the auction  from database, api responses with a message of  successfull delete.
 
+## Packages and Dependencies
+
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.4.1"
+
 
 
 
