@@ -6,6 +6,8 @@ const userRoutes = require("./routes/userRoutes");
 const listingsRoutes = require("./routes/listingsRoutes");
 const bidRoutes = require("./routes/bidRoutes");
 const savedItemsRoutes = require("./routes/savedItemRoutes");
+//cron jobs------
+const checkEndedAuctionCronJob = require("./utils/cronJobs/checkEndedAuction");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const app = express();
 dotenv.config();
@@ -27,7 +29,10 @@ app.use("/api/listings", listingsRoutes);
 app.use("/api/bids", bidRoutes);
 app.use("/api/savedItems", savedItemsRoutes);
 
-//error handler mids
+// cron jobs---
+// checkEndedAuctionCronJob()
+
+//error handler middlewares
 app.use(notFound);
 app.use(errorHandler);
 
