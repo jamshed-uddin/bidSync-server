@@ -30,6 +30,9 @@ const checkEndedAuction = async () => {
           }
 
           await auction.save();
+          console.log("aucton updated");
+
+          // todo: notify seller and winner
         })
       );
     }
@@ -37,8 +40,9 @@ const checkEndedAuction = async () => {
 };
 
 const checkEndedAuctionCronJob = () => {
-  cron.schedule("* * * * * *", () => {
+  cron.schedule("* * * * *", () => {
     console.log("cron job running");
+    checkEndedAuction();
   });
 };
 

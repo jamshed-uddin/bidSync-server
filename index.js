@@ -30,7 +30,7 @@ app.use("/api/bids", bidRoutes);
 app.use("/api/savedItems", savedItemsRoutes);
 
 // cron jobs---
-// checkEndedAuctionCronJob()
+checkEndedAuctionCronJob();
 
 //error handler middlewares
 app.use(notFound);
