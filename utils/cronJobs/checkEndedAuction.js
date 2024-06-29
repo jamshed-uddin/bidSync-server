@@ -12,6 +12,7 @@ const checkEndedAuction = async () => {
       clossesIn: { $lte: currentDate },
       status: "active",
     })
+      .populate("user highestBidder")
       .limit(batchSize)
       .exec();
 
@@ -42,7 +43,7 @@ const checkEndedAuction = async () => {
 const checkEndedAuctionCronJob = () => {
   cron.schedule("* * * * *", () => {
     console.log("cron job running");
-    checkEndedAuction();
+    // checkEndedAuction();
   });
 };
 
