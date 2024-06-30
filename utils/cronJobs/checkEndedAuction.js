@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const Listings = require("../../schemas/listingsSchema");
+const notifySellerAndWinner = require("../mailingJobs/notifySellerAndWinner");
 
 const checkEndedAuction = async () => {
   const currentDate = new Date();
@@ -26,14 +27,19 @@ const checkEndedAuction = async () => {
             auction.highestBidder
           ) {
             auction.status = "completed";
+            auction.paymentDeadline = new Date(
+              currentDate.getTime() + 5 * 24 * 60 * 60 * 1000
+            );
+            await auction.save();
           } else {
             auction.status = "expired";
+            await auction.save();
           }
 
-          await auction.save();
-          console.log("aucton updated");
+          console.log("auction updated");
+          console.log(auction);
 
-          // todo: notify seller and winner
+          notifySellerAndWinner(auction);
         })
       );
     }
@@ -43,7 +49,7 @@ const checkEndedAuction = async () => {
 const checkEndedAuctionCronJob = () => {
   cron.schedule("* * * * *", () => {
     console.log("cron job running");
-    // checkEndedAuction();
+    checkEndedAuction();
   });
 };
 

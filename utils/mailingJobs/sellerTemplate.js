@@ -1,10 +1,6 @@
-const sellerTemplateHandler = (
-  winnerName,
-  auctionTitle,
-  highestBid,
-  highestBidderName,
-  auctionId
-) => {
+const sellerTemplateHandler = (auction) => {
+  const { title, highestBid, highestBidder, user, _id } = auction;
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,15 +57,15 @@ const sellerTemplateHandler = (
 <body>
     <div class="container">
         <h1>Your Item Has Been Sold!</h1>
-        <p>Dear ${winnerName},</p>
-        <p>We are pleased to inform you that your item <strong>${auctionTitle}</strong> has been sold for <strong>${highestBid}</strong>.</p>
+        <p>Dear ${user.name},</p>
+        <p>We are pleased to inform you that your item <strong>${title}</strong> has been sold for <strong>${highestBid}</strong>.</p>
         <div class="details">
-            <p><strong>Item:</strong> ${auctionTitle}</p>
+            <p><strong>Item:</strong> ${title}</p>
             <p><strong>Winning Bid:</strong> ${highestBid}</p>
-            <p><strong>Buyer:</strong> ${highestBidderName}</p>
+            <p><strong>Buyer:</strong> ${highestBidder.name}</p>
         </div>
         <p>Please prepare the item for shipment as soon as the payment is confirmed.</p>
-        <a href="http://localhost:5173/auction/${auctionId}" class="button" target="_blank">See item</a>
+        <a href="http://localhost:5173/auction/${_id}" class="button" target="_blank">See item</a>
         <p class="footer">Thank you for using our auction platform. We hope to assist you with your future sales.</p>
     </div>
 </body>

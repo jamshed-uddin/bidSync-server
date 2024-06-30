@@ -1,10 +1,12 @@
-const winnerTemplateHandler = (
-  winnerName,
-  auctionTitle,
-  highestBid,
-  paymentDeadline,
-  auctionId
-) => {
+const winnerTemplateHandler = (auction) => {
+  const { title, highestBid, highestBidder, _id } = auction;
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() + 5);
+  const options = { day: "numeric", month: "long", year: "numeric" };
+  const paymentDeadline = new Intl.DateTimeFormat("en-GB", options).format(
+    currentDate
+  );
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,15 +63,15 @@ const winnerTemplateHandler = (
 <body>
     <div class="container">
         <h1>Congratulations! You Won the Auction</h1>
-        <p>Dear ${winnerName},</p>
-        <p>We are excited to inform you that you have won the auction for <strong>${auctionTitle}</strong> with a bid of <strong>${highestBid}</strong>.</p>
+        <p>Dear ${highestBidder.name},</p>
+        <p>We are excited to inform you that you have won the auction for <strong>${title}</strong> with a bid of <strong>${highestBid}</strong>.</p>
         <div class="details">
-            <p><strong>Item:</strong> ${auctionTitle}</p>
+            <p><strong>Item:</strong> ${title}</p>
             <p><strong>Winning Bid:</strong> ${highestBid}</p>
             <p><strong>Payment Deadline:</strong> ${paymentDeadline}</p>
         </div>
         <p>Please complete the payment by the deadline to proceed with the purchase.</p>
-        <a href="http://localhost:5173/checkout/${auctionId}" class="button" target="_blank">Complete Payment</a>
+        <a href="http://localhost:5173/checkout/${_id}" class="button" target="_blank">Complete Payment</a>
         <p class="footer">Thank you for participating in our auction. We look forward to serving you again.</p>
     </div>
 </body>

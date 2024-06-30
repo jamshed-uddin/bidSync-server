@@ -1,21 +1,32 @@
 const sellerTemplate = require("./sellerTemplate");
+const sendMail = require("./sendMail");
 const winnerTemplate = require("./winnerTemplate");
 
 const notifySellerAndWinner = async (auction) => {
-  const emails = [];
+  try {
+    const emails = [];
 
-  const winnerEmail = auction.highestBidder.email;
-  const sellerEmail = auction.seller.email;
+    const winnerEmail = auction.highestBidder.email;
+    const sellerEmail = auction.user.email;
 
-  const winnerSubject = "Congratulations! You won the auction";
-  const winnerText = winnerTemplate();
+    const winnerSubject = "Congratulations! You won the auction";
+    const winnerHtml = winnerTemplate(auction);
 
-  const sellerSubject = "Your item has been sold";
-  const sellerText = sellerTemplate();
+    const sellerSubject = "Your item has been sold";
+    const sellerHtml = sellerTemplate(auction);
 
-  emails.push(sendEmail(winnerEmail, winnerSubject, winnerText));
-  emails.push(sendEmail(sellerEmail, sellerSubject, sellerText));
+    emails.push(
+      sendMail({ to: winnerEmail, subject: winnerSubject, html: winnerHtml })
+    );
+    emails.push(
+      sendMail({ to: sellerEmail, subject: sellerSubject, html: sellerHtml })
+    );
 
-  // Send all emails in parallel
-  await Promise.all(emails);
+    // Send all emails in parallel
+    await Promise.all(emails);
+  } catch (error) {
+    console.log(error);
+  }
 };
+
+module.exports = notifySellerAndWinner;
