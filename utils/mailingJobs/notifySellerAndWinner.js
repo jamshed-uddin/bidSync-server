@@ -1,5 +1,6 @@
 const sellerTemplate = require("./sellerTemplate");
-const sendMail = require("./sendMail");
+const sendMailHandler = require("./sendMailHandler");
+
 const winnerTemplate = require("./winnerTemplate");
 
 const notifySellerAndWinner = async (auction) => {
@@ -16,10 +17,19 @@ const notifySellerAndWinner = async (auction) => {
     const sellerHtml = sellerTemplate(auction);
 
     emails.push(
-      sendMail({ to: winnerEmail, subject: winnerSubject, html: winnerHtml })
+      sendMailHandler({
+        to: winnerEmail,
+        subject: winnerSubject,
+        html: winnerHtml,
+      })
     );
+
     emails.push(
-      sendMail({ to: sellerEmail, subject: sellerSubject, html: sellerHtml })
+      sendMailHandler({
+        to: sellerEmail,
+        subject: sellerSubject,
+        html: sellerHtml,
+      })
     );
 
     // Send all emails in parallel
