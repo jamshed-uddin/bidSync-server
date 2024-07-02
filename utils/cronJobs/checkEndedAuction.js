@@ -31,15 +31,11 @@ const checkEndedAuction = async () => {
               currentDate.getTime() + 5 * 24 * 60 * 60 * 1000
             );
             await auction.save();
+            notifySellerAndWinner(auction);
           } else {
             auction.status = "expired";
             await auction.save();
           }
-
-          console.log("auction updated");
-          console.log(auction);
-
-          notifySellerAndWinner(auction);
         })
       );
     }

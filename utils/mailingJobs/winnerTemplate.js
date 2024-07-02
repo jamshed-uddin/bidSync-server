@@ -43,9 +43,8 @@ const winnerTemplateHandler = (auction) => {
             background-color: #f9f9f9;
             border-radius: 5px;
         }
-          .button {
+        .button {
             display: inline-block;
-           
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
@@ -62,6 +61,8 @@ const winnerTemplateHandler = (auction) => {
 </head>
 <body>
     <div class="container">
+
+        <h1>BidSync</h1>
         <h1>Congratulations! You Won the Auction</h1>
         <p>Dear ${highestBidder.name},</p>
         <p>We are excited to inform you that you have won the auction for <strong>${title}</strong> with a bid of <strong>${highestBid}</strong>.</p>

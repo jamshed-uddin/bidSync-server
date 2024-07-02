@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
+const dotenv = require("dotenv").config();
 const connectDb = require("./config/connnectDb");
 const userRoutes = require("./routes/userRoutes");
 const listingsRoutes = require("./routes/listingsRoutes");
@@ -12,7 +12,7 @@ const deliveryRoutes = require("./routes/deliveryRoutes");
 const checkEndedAuctionCronJob = require("./utils/cronJobs/checkEndedAuction");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const app = express();
-dotenv.config();
+
 const port = process.env.PORT || 3000;
 
 app.use(cors());
@@ -34,7 +34,7 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/delivery", deliveryRoutes);
 
 // cron jobs---
-checkEndedAuctionCronJob();
+// checkEndedAuctionCronJob();
 
 //error handler middlewares
 app.use(notFound);

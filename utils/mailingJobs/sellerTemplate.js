@@ -37,9 +37,8 @@ const sellerTemplateHandler = (auction) => {
             background-color: #f9f9f9;
             border-radius: 5px;
         }
-         .button {
+        .button {
             display: inline-block;
-         
             padding: 10px 20px;
             font-size: 16px;
             color: #fff;
@@ -56,6 +55,7 @@ const sellerTemplateHandler = (auction) => {
 </head>
 <body>
     <div class="container">
+       <h1>BidSync</h1>
         <h1>Your Item Has Been Sold!</h1>
         <p>Dear ${user.name},</p>
         <p>We are pleased to inform you that your item <strong>${title}</strong> has been sold for <strong>${highestBid}</strong>.</p>

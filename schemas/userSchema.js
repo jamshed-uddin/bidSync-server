@@ -11,6 +11,7 @@ const userSchema = mongoose.Schema(
       addressLineOne: { type: String },
       addressLineTwo: { type: String },
     },
+    bankInfoAdded: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -18,7 +18,8 @@
     "mongoose": "^8.4.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.14",
-    "resend": "^3.4.0"
+    "resend": "^3.4.0",
+    "stripe": "^16.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
