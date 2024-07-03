@@ -11,7 +11,7 @@ const savePaymentInfo = async () => {};
 //access private
 const getAllPaymentInfo = async () => {};
 
-//@desc connect and board user to stripe . may take some parameter in query
+//@desc connect and board user to stripe .
 //route GET/api/payment/connectAndBoardUser
 //access private
 const connectAndOnboardUser = async (req, res, next) => {
@@ -39,10 +39,52 @@ const connectAndOnboardUser = async (req, res, next) => {
       type: "account_onboarding",
     });
 
-    await StripeAccount.create({ user: userId, stripeAccountId: account.id });
-    await User.findOneAndUpdate({ _id: userId }, { bankInfoAdded: true });
+    await StripeAccount.create({
+      user: userId,
+      stripeAccountId: account.id,
+      status: "pending",
+    });
 
     res.status(201).send({ account: account, accountLinks: accountLinks });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//@desc check for onboard status whether onboarding is complete or not
+//route POST/api/payment/checkOnboardStatus
+//access private
+const checkOnboardStatus = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+
+    const userInfo = await User.findOne({ _id: userId });
+    const stripeAccountFromDb = await StripeAccount.findOne({ user: userId });
+
+    if (userInfo.bankInfoAdded) {
+      throw newCustomError(409, "Bank info already added.");
+    }
+
+    if (!stripeAccountFromDb) {
+      throw newCustomError(404, "No stripe account found");
+    }
+
+    const account = await stripe.accounts.retrieve(
+      stripeAccountFromDb.stripeAccountId
+    );
+
+    if (
+      account.details_submitted &&
+      account.payouts_enabled &&
+      account.requirements.disabled_reason === null
+    ) {
+      stripeAccountFromDb.status = "complete";
+      userInfo.bankInfoAdded = true;
+      await stripeAccountFromDb.save();
+      await userInfo.save();
+    }
+
+    res.status(200).send({ message: "Account info updated" });
   } catch (error) {
     next(error);
   }
@@ -80,6 +122,7 @@ module.exports = {
   savePaymentInfo,
   getAllPaymentInfo,
   connectAndOnboardUser,
+  checkOnboardStatus,
   dashboardLoginLink,
   createSecret,
 };
