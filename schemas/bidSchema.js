@@ -12,4 +12,4 @@ const bidSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Bids", bidSchema);
+module.exports = mongoose.model("Bid", bidSchema);

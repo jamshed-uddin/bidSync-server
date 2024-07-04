@@ -12,6 +12,7 @@ const verifyAccess = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       req.user = await User.findOne({ email: decoded.email });
+
       next();
     } catch (error) {
       //   throw newCustomError(401, "Unauthorized action.Invalid token");

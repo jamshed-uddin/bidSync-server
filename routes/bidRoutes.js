@@ -9,6 +9,5 @@ const router = express.Router();
 
 router.post("/", verifyAccess, createBid); //private route
 router.get("/:id", getAllBids);
-router.get("/mybids/:id", verifyAccess, getMyBids);
-
+router.get("/myBids/:userId", verifyAccess, getMyBids);
 module.exports = router;

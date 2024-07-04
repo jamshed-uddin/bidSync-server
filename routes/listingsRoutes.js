@@ -7,6 +7,7 @@ const {
   deleteAuction,
   getUsersListings,
   searchAuctions,
+  getUsersWonAuction,
 } = require("../controllers/listingsController");
 const { verifyAccess } = require("../middlewares/verifyAccess");
 const router = express.Router();
@@ -16,6 +17,7 @@ router.get("/", getAllAuctions);
 router.get("/search", searchAuctions);
 router.get("/:id", getSingleAuction);
 router.get("/myListings/:userId", verifyAccess, getUsersListings); //private route
+router.get("/wonAuctions/:userId", verifyAccess, getUsersWonAuction); //private route
 router.patch("/:id", verifyAccess, updateAuction); //private route
 router.delete("/:id", verifyAccess, deleteAuction); //private route
 

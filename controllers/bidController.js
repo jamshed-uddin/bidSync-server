@@ -53,7 +53,8 @@ const getAllBids = async (req, res, next) => {
 
     const allBids = await Bids.find({ auctionId: id })
       .sort({ amount: -1 })
-      .populate("user");
+      .populate("user")
+      .exec();
     res.status(200).send({
       message: "All bids retrived",
       data: allBids,
@@ -63,18 +64,21 @@ const getAllBids = async (req, res, next) => {
   }
 };
 //@desc get all bid  -user wise
-//route GET/api/bids/mybids/:id   id here is the user id
+//route GET/api/bids/mybids   id here is the user id
 //access public
-
 const getMyBids = async (req, res, next) => {
   try {
-    const allBids = await Bids.find({ user: req.user._id }).populate(
-      "auctionId"
-    );
+    const userId = req.params.userId;
+    console.log(userId);
+
+    const myBids = await Bids.find({ user: userId })
+      .sort({ amount: -1 })
+      .populate("auctionId")
+      .exec();
 
     res.status(200).send({
-      message: "All bids user retrived",
-      data: allBids,
+      message: "Users bids retrieved",
+      data: myBids?.map((item) => item.auctionId),
     });
   } catch (error) {
     next(error);

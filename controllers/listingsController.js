@@ -29,13 +29,14 @@ const getAllAuctions = async (req, res, next) => {
 
     const filter = category
       ? category === "all"
-        ? {}
-        : { category: new RegExp(category, "i") }
-      : {};
+        ? { status: "active" }
+        : { category: new RegExp(category, "i"), status: "active" }
+      : { status: "active" };
 
     const allAuction = await Listings.find(filter)
       .sort({ createdAt: -1 })
-      .populate("user");
+      .populate("user")
+      .exec();
 
     res.status(200).send({
       message: "All auction retrived",
@@ -64,6 +65,28 @@ const getUsersListings = async (req, res, next) => {
       message: "All auction retrived",
       data: allAuction,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//@desc get user's won auctins
+//route GET/api/listings/wonAuctions
+//access private
+const getUsersWonAuction = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const wonAuctions = await Listings.find({
+      highestBidder: userId,
+      status: "completed",
+    })
+      .sort({ createdAt: -1 })
+      .populate("user")
+      .exec();
+
+    res
+      .status(200)
+      .send({ message: "Won auctions retrieved", data: wonAuctions });
   } catch (error) {
     next(error);
   }
@@ -175,6 +198,7 @@ module.exports = {
   createAuction,
   getAllAuctions,
   getUsersListings,
+  getUsersWonAuction,
   getSingleAuction,
   updateAuction,
   deleteAuction,
