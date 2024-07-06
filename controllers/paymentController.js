@@ -1,15 +1,36 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const StripeAccount = require("../schemas/StripeAccountSchema");
+const Payment = require("../schemas/paymentSchema");
 const User = require("../schemas/userSchema");
 const newCustomError = require("../utils/newCustomError");
 //@desc save payment info
 //route POST/api/payment
 //access private
-const savePaymentInfo = async () => {};
+const savePaymentInfo = async (req, res, next) => {
+  try {
+    const body = req.body;
+    const paymentInfo = { payer: req.user._id, ...body };
+
+    const paymentData = await Payment.create(paymentInfo);
+    res.status(201).send({ message: "Payment info saved", data: paymentData });
+  } catch (error) {
+    next(error);
+  }
+};
 //@desc get all payment info.user id in query
 //route GET/api/payment
 //access private
-const getAllPaymentInfo = async () => {};
+const getAllPaymentInfo = async (req, res, next) => {
+  try {
+    const myPayments = await Payment.find({ payer: req.user._id });
+
+    res
+      .status(200)
+      .send({ message: "Payments data retrieved", data: myPayments });
+  } catch (error) {
+    next(error);
+  }
+};
 
 //@desc connect and board user to stripe .
 //route GET/api/payment/connectAndBoardUser
@@ -116,7 +137,33 @@ const dashboardLoginLink = async (req, res, next) => {
 //@desc create client_secret by create payment intent
 //route GET/api/payment/secret
 //access private
-const createSecret = async () => {};
+const createSecret = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const userStripeAccount = await StripeAccount.findOne({ user: userId });
+    const { amount } = req.body;
+    const ammountInCent = Math.ceil(Number(amount * 100));
+    const parcentage = 2 / 100;
+    const applicationFee = Math.round(ammountInCent * parcentage);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: ammountInCent,
+      currency: "usd",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+
+      application_fee_amount: applicationFee,
+      transfer_data: {
+        destination: userStripeAccount?.stripeAccountId,
+      },
+    });
+
+    res.status(201).send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   savePaymentInfo,
