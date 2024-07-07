@@ -8,6 +8,7 @@ const bidRoutes = require("./routes/bidRoutes");
 const savedItemsRoutes = require("./routes/savedItemRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const deliveryRoutes = require("./routes/deliveryRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 //cron jobs------
 const checkEndedAuctionCronJob = require("./utils/cronJobs/checkEndedAuction");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
@@ -32,6 +33,7 @@ app.use("/api/bids", bidRoutes);
 app.use("/api/savedItems", savedItemsRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/delivery", deliveryRoutes);
+app.use("/api/notification", notificationRoutes);
 
 // cron jobs---
 // checkEndedAuctionCronJob();
