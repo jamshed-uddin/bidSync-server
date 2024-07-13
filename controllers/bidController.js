@@ -71,14 +71,20 @@ const getMyBids = async (req, res, next) => {
     const userId = req.params.userId;
     console.log(userId);
 
-    const myBids = await Bids.find({ user: userId })
+    const bids = await Bids.find({ user: userId })
       .sort({ amount: -1 })
-      .populate("auctionId")
-      .exec();
+      .populate("auctionId");
+
+    const myBids = bids?.map((bid) => {
+      const auction = bid.auctionId.toObject();
+      delete auction.status;
+
+      return { ...auction, bidStatus: bid.status };
+    });
 
     res.status(200).send({
       message: "Users bids retrieved",
-      data: myBids?.map((item) => item.auctionId),
+      data: myBids,
     });
   } catch (error) {
     next(error);
