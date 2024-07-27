@@ -25,23 +25,121 @@ const createAuction = async (req, res, next) => {
 //access public
 const getAllAuctions = async (req, res, next) => {
   try {
-    const category = req.query.category || "";
+    const query = req.query;
+    const searchQuery = query.q;
+    const page = +query.page || 1;
+    const limit = +query.limit || 2;
+    const category = query.category || "";
+    const status = "active";
 
-    const filter = category
-      ? category === "all"
-        ? { status: "active" }
-        : { category: new RegExp(category, "i"), status: "active" }
-      : { status: "active" };
+    let filter = { status };
 
-    const allAuction = await Listings.find(filter)
-      .sort({ createdAt: -1 })
+    // mongodb $and operator array for multiple $or operator in single filter
+    const andOptions = [];
+
+    // adding category in filter
+    if (category) {
+      filter.category = new RegExp(category, "i");
+    }
+
+    // adding searchQuery $or operator in andOptions
+    if (searchQuery) {
+      andOptions.push({
+        $or: [
+          { title: { $regex: new RegExp(searchQuery, "i") } },
+          { category: { $regex: new RegExp(searchQuery, "i") } },
+        ],
+      });
+    }
+
+    // adding minPrice $or operator in andOptions
+
+    if (query.minPrice) {
+      andOptions.push({
+        $or: [
+          { highestBid: { $exists: true, $gte: query.minPrice } },
+          {
+            highestBid: { $exists: false },
+            startingPrice: { $gte: query.minPrice },
+          },
+        ],
+      });
+    }
+
+    // adding max $or operator in andOptions
+
+    if (query.maxPrice) {
+      andOptions.push({
+        $or: [
+          { highestBid: { $exists: true, $lte: query.maxPrice } },
+          {
+            highestBid: { $exists: false },
+            startingPrice: { $lte: query.maxPrice },
+          },
+        ],
+      });
+    }
+
+    // adding $and options array to filter if there is any element in it
+    if (andOptions.length > 0) {
+      filter.$and = andOptions;
+    }
+
+    // sorting
+    let sortBy = { createdAt: -1 };
+    if (query?.sort) {
+      sortBy[query?.sort] =
+        query?.order && query?.order.toLowerCase() === "desc" ? -1 : 1;
+    }
+
+    // querying database with all options
+    const allAuctions = await Listings.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort(sortBy)
       .populate("user")
       .exec();
 
-    res.status(200).send({
+    // const totalItems = await Listings.countDocuments(filter).exec();
+    const items = await Listings.find(filter).exec();
+    const totalItems = items?.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const searchParams = searchQuery ? `q=${searchQuery}` : "";
+    const response = {
       message: "All auction retrived",
-      data: allAuction,
-    });
+      data: allAuctions,
+      pagination: {
+        page,
+        limit,
+        totalPages,
+        totalItems,
+        links: {
+          self: `/auctions?${
+            searchParams && searchParams + "&"
+          }page=${page}&limit=${limit}`,
+          first: `/auctions?${
+            searchParams && searchParams + "&"
+          }page=${1}&limit=${limit}`,
+          last: `/auctions?${
+            searchParams && searchParams + "&"
+          }page=${totalPages}&limit=${limit}`,
+          prev:
+            page > 1
+              ? `/auctions?${searchParams && searchParams + "&"}page=${
+                  page - 1
+                }&limit=${limit}`
+              : null,
+          next:
+            page < totalPages
+              ? `/auctions?${searchParams && searchParams + "&"}page=${
+                  page + 1
+                }&limit=${limit}`
+              : null,
+        },
+      },
+    };
+
+    res.status(200).send(response);
   } catch (error) {
     next(error);
   }

@@ -1,7 +1,25 @@
 const Notification = require("../schemas/NotificationSchema");
+const User = require("../schemas/userSchema");
+
+const generateNotification = async (notificationBody) => {
+  try {
+    const { recipient } = notificationBody;
+    const user = await User.findOne({ _id: recipient });
+    const createdNotification = await Notification.create(notificationBody);
+
+    if (user) {
+      user.newNotifications = true;
+      await user.save();
+    }
+
+    return createdNotification;
+  } catch (error) {
+    return error;
+  }
+};
 
 //@desc createNotification
-//route POST/api/notification
+//route POST/api/notifications
 //access private
 
 const createNotification = async (req, res, next) => {
@@ -18,14 +36,12 @@ const createNotification = async (req, res, next) => {
   }
 };
 //@desc get notifications
-//route GET/api/notification
+//route GET/api/notifications
 //access private
 
 const getNotifications = async (req, res, next) => {
   try {
-    const body = req.body;
     const userId = req.user._id;
-
     const notifications = await Notification.find({ recipient: userId });
 
     res
@@ -36,4 +52,4 @@ const getNotifications = async (req, res, next) => {
   }
 };
 
-module.exports = { createNotification, getNotifications };
+module.exports = { createNotification, getNotifications, generateNotification };

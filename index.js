@@ -12,6 +12,7 @@ const notificationRoutes = require("./routes/notificationRoutes");
 //cron jobs------
 const checkEndedAuctionCronJob = require("./utils/cronJobs/checkEndedAuction");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
+const checkPaymentDeadlineCronJob = require("./utils/cronJobs/checkPaymentDeadline");
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -33,10 +34,11 @@ app.use("/api/bids", bidRoutes);
 app.use("/api/savedItems", savedItemsRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/delivery", deliveryRoutes);
-app.use("/api/notification", notificationRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // cron jobs---
 // checkEndedAuctionCronJob();
+// checkPaymentDeadlineCronJob()
 
 //error handler middlewares
 app.use(notFound);

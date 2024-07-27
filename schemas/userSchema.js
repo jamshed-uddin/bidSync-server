@@ -12,6 +12,7 @@ const userSchema = mongoose.Schema(
       addressLineTwo: { type: String, default: "" },
     },
     bankInfoAdded: { type: Boolean, default: false },
+    newNotifications: { type: Boolean },
   },
   { timestamps: true }
 );

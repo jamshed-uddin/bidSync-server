@@ -2,6 +2,7 @@ const Bids = require("../schemas/bidSchema");
 const User = require("../schemas/userSchema");
 const Listing = require("../schemas/listingsSchema");
 const newCustomError = require("../utils/newCustomError");
+const { generateNotification } = require("./notificationController");
 
 //@desc create bid
 //route POST/api/bids
@@ -9,11 +10,11 @@ const newCustomError = require("../utils/newCustomError");
 
 const createBid = async (req, res, next) => {
   try {
-    const body = req.body;
+    const { currentBidId, ...body } = req.body;
     const { auctionId, amount } = req.body;
     const auctionInfo = await Listing.findOne({ _id: auctionId });
     const userInfo = await User.findOne({ _id: req.user._id });
-
+    console.log(body);
     if (!auctionInfo) {
       throw newCustomError(404, "Auction not found");
     }
@@ -24,11 +25,23 @@ const createBid = async (req, res, next) => {
         "Biddng amount must be greater than last bid and starting price"
       );
     }
-    const createdBid = await Bids.create({ ...body, user: req.user._id });
 
+    const createdBid = await Bids.create({ ...body, user: req.user._id });
+    // updating auction highestBid and highestBidder
     auctionInfo.highestBid = createdBid.amount;
     auctionInfo.highestBidder = createdBid.user;
     await auctionInfo.save();
+
+    // marking previous bid as outbidded
+    const currentBid = await Bids.findOne({ _id: currentBidId });
+    currentBid.status = "outbidded";
+    await currentBid.save();
+    // sending notification to the previous bidder
+    await generateNotification({
+      recipient: currentBid.user,
+      message: `You are outbidded in auction for ${auctionInfo?.title}`,
+      link: `/auctions/${auctionInfo._id}`,
+    });
 
     if (userInfo) {
       createdBid.user = userInfo;
@@ -79,7 +92,7 @@ const getMyBids = async (req, res, next) => {
       const auction = bid.auctionId.toObject();
       delete auction.status;
 
-      return { ...auction, bidStatus: bid.status };
+      return { ...auction, bidStatus: bid.status, amount: bid.amount };
     });
 
     res.status(200).send({

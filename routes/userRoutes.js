@@ -6,7 +6,6 @@ const {
   deleteUser,
   getJwtToken,
 } = require("../controllers/userControllers");
-const generateJwtToken = require("../utils/generateJwt");
 const { verifyAccess } = require("../middlewares/verifyAccess");
 
 const router = express.Router();
