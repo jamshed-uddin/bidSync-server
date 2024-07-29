@@ -7,9 +7,10 @@ const userSchema = mongoose.Schema(
     photoURL: { type: String },
     address: {
       country: { type: String, default: "" },
+      zip: { type: Number },
+      state: { type: String, default: "" },
       city: { type: String, default: "" },
-      addressLineOne: { type: String, default: "" },
-      addressLineTwo: { type: String, default: "" },
+      address: { type: String, default: "" },
     },
     bankInfoAdded: { type: Boolean, default: false },
     newNotifications: { type: Boolean },

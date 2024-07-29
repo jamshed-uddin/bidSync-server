@@ -28,7 +28,7 @@ const getAllAuctions = async (req, res, next) => {
     const query = req.query;
     const searchQuery = query.q;
     const page = +query.page || 1;
-    const limit = +query.limit || 2;
+    const limit = +query.limit || 15;
     const category = query.category || "";
     const status = "active";
 
@@ -176,7 +176,7 @@ const getUsersWonAuction = async (req, res, next) => {
     const userId = req.params.userId;
     const wonAuctions = await Listings.find({
       highestBidder: userId,
-      status: "completed",
+      status: { $ne: "active" },
     })
       .sort({ createdAt: -1 })
       .populate("user")
@@ -267,31 +267,6 @@ const deleteAuction = async (req, res, next) => {
   }
 };
 
-//@desc search auction
-//route get/api/listings/search?q=''
-//access private
-
-const searchAuctions = async (req, res, next) => {
-  const searchQuery = req.query.q;
-
-  try {
-    if (searchQuery) {
-      const auctions = await Listings.find({
-        $or: [
-          { title: { $regex: new RegExp(searchQuery, "i") } },
-          { category: { $regex: new RegExp(searchQuery, "i") } },
-        ],
-      });
-
-      res.status(200).send({ message: "Query complete", data: auctions });
-    } else {
-      res.status(200).send({ message: "Query complete", data: [] });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   createAuction,
   getAllAuctions,
@@ -300,5 +275,4 @@ module.exports = {
   getSingleAuction,
   updateAuction,
   deleteAuction,
-  searchAuctions,
 };

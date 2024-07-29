@@ -12,6 +12,7 @@ const createBid = async (req, res, next) => {
   try {
     const { currentBidId, ...body } = req.body;
     const { auctionId, amount } = req.body;
+    const currentBid = await Bids.findOne({ _id: currentBidId });
     const auctionInfo = await Listing.findOne({ _id: auctionId });
     const userInfo = await User.findOne({ _id: req.user._id });
     console.log(body);
@@ -33,7 +34,6 @@ const createBid = async (req, res, next) => {
     await auctionInfo.save();
 
     // marking previous bid as outbidded
-    const currentBid = await Bids.findOne({ _id: currentBidId });
     currentBid.status = "outbidded";
     await currentBid.save();
     // sending notification to the previous bidder

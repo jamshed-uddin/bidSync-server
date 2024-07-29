@@ -42,7 +42,11 @@ const createNotification = async (req, res, next) => {
 const getNotifications = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const notifications = await Notification.find({ recipient: userId });
+    const notifications = await Notification.find({ recipient: userId })
+      .sort({
+        createdAt: -1,
+      })
+      .exec();
 
     res
       .status(200)

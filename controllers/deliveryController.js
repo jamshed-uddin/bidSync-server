@@ -1,12 +1,16 @@
 const Delivery = require("../schemas/deliverySchema");
-
+const User = require("../schemas/userSchema");
 //@desc create delivery info
 //route POST/api/delivery
 //access private
 const createDelivery = async (req, res, next) => {
   try {
-    const deliveryInfo = req.body;
-
+    const { recipient } = req.body;
+    let deliveryInfo = { ...req.body };
+    const user = await User.findOne({ _id: recipient });
+    if (user) {
+      deliveryInfo.shippingAddress = user.address;
+    }
     const createdDelivery = await Delivery.create(deliveryInfo);
     res
       .status(201)
@@ -23,7 +27,9 @@ const getAllDeliveries = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
-    const allDeliveries = await Delivery.find({ recipient: userId });
+    const allDeliveries = await Delivery.find({ recipient: userId })
+      .sort({ createdAt: -1 })
+      .exec();
 
     res
       .status(200)

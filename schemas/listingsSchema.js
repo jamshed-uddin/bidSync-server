@@ -25,7 +25,6 @@ const listingsSchema = mongoose.Schema(
         "active",
         "completed",
         "expired",
-        "paid",
         "shipped",
         "delivered",
         "unpaid",

@@ -6,7 +6,7 @@ const {
   updateAuction,
   deleteAuction,
   getUsersListings,
-  searchAuctions,
+
   getUsersWonAuction,
 } = require("../controllers/listingsController");
 const { verifyAccess } = require("../middlewares/verifyAccess");
@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post("/", verifyAccess, createAuction); //private route
 router.get("/", getAllAuctions);
-router.get("/search", searchAuctions);
+
 router.get("/:id", getSingleAuction);
 router.get("/myListings/:userId", verifyAccess, getUsersListings); //private route
 router.get("/wonAuctions/:userId", verifyAccess, getUsersWonAuction); //private route

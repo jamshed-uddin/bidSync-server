@@ -42,7 +42,7 @@ const checkPaymentDeadline = async () => {
           await generateNotification({
             recipient: auction.user,
             message:
-              "The winner did not complete the payment for your item. You can relist the item here.",
+              "The winner did not complete the payment for your item. You can relist the item.",
             link: `/auctions/${auction._id}`,
           });
         })

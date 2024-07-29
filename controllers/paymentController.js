@@ -1,5 +1,6 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const StripeAccount = require("../schemas/StripeAccountSchema");
+const Listings = require("../schemas/listingsSchema");
 const Payment = require("../schemas/paymentSchema");
 const User = require("../schemas/userSchema");
 const newCustomError = require("../utils/newCustomError");
@@ -10,7 +11,9 @@ const savePaymentInfo = async (req, res, next) => {
   try {
     const body = req.body;
     const paymentInfo = { payer: req.user._id, ...body };
-
+    const auction = await Listings.findOne({ _id: body.auctionId });
+    auction.status = "shipped";
+    await auction.save();
     const paymentData = await Payment.create(paymentInfo);
     res.status(201).send({ message: "Payment info saved", data: paymentData });
   } catch (error) {
@@ -22,7 +25,9 @@ const savePaymentInfo = async (req, res, next) => {
 //access private
 const getAllPaymentInfo = async (req, res, next) => {
   try {
-    const myPayments = await Payment.find({ payer: req.user._id });
+    const myPayments = await Payment.find({ payer: req.user._id })
+      .sort({ createdAt: -1 })
+      .exec();
 
     res
       .status(200)
