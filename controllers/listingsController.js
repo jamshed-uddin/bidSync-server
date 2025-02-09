@@ -1,19 +1,56 @@
 const Listings = require("../schemas/listingsSchema");
+const { uploadToCloud, deleteFromCloud } = require("../utils/cloudinaryOps");
 const newCustomError = require("../utils/newCustomError");
+
+// @desc upload image to cloudinary
+//route POST/api/listings/image/upload
+//access Private
+const uploadImage = async (req, res, next) => {
+  try {
+    const files = req.files;
+
+    if (!files.length || !files) {
+      throw newCustomError(400, "Files is missing");
+    }
+
+    const uploadPromisses = files.map((file) => uploadToCloud(file));
+
+    const uploadResult = await Promise.all(uploadPromisses);
+
+    res.status(200).send({ urls: uploadResult });
+  } catch (error) {
+    next(error);
+  }
+};
+// @desc delete image
+//route POST/api/listings/image/delete
+//access Private
+const deleteImage = async (req, res, next) => {
+  try {
+    const { publicIds } = req.body;
+    if (!publicIds?.length) {
+      throw newCustomError(400, "PublicId is missing");
+    }
+    await deleteFromCloud(publicIds);
+    res.status(200).send({ message: "Image deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
 
 //@desc create auction
 //route POST/api/listings
 //access Private
-const createAuction = async (req, res, next) => {
+const listAnItem = async (req, res, next) => {
   try {
-    const auctionBody = req.body;
-    const createdAuction = await Listings.create({
-      ...auctionBody,
+    const itemBody = req.body;
+    const createdItem = await Listings.create({
+      ...itemBody,
       user: req.user._id,
     });
     res.status(201).send({
-      message: "Auction created successfully",
-      data: { auctionId: createdAuction._id },
+      message: "Item listed successfully",
+      data: { itemId: createdItem._id },
     });
   } catch (error) {
     next(error);
@@ -23,7 +60,7 @@ const createAuction = async (req, res, next) => {
 //@desc get all auction
 //route GET/api/listings
 //access public
-const getAllAuctions = async (req, res, next) => {
+const getAllListings = async (req, res, next) => {
   try {
     const query = req.query;
     const searchQuery = query.q;
@@ -93,7 +130,7 @@ const getAllAuctions = async (req, res, next) => {
     }
 
     // querying database with all options
-    const allAuctions = await Listings.find(filter)
+    const allItems = await Listings.find(filter)
       .skip((page - 1) * limit)
       .limit(limit)
       .sort(sortBy)
@@ -106,32 +143,32 @@ const getAllAuctions = async (req, res, next) => {
     const totalPages = Math.ceil(totalItems / limit);
     const searchParams = searchQuery ? `q=${searchQuery}` : "";
     const response = {
-      message: "All auction retrived",
-      data: allAuctions,
+      message: "All listings retrived",
+      data: allItems,
       pagination: {
         page,
         limit,
         totalPages,
         totalItems,
         links: {
-          self: `/auctions?${
+          self: `/listings?${
             searchParams && searchParams + "&"
           }page=${page}&limit=${limit}`,
-          first: `/auctions?${
+          first: `/listings?${
             searchParams && searchParams + "&"
           }page=${1}&limit=${limit}`,
-          last: `/auctions?${
+          last: `/listings?${
             searchParams && searchParams + "&"
           }page=${totalPages}&limit=${limit}`,
           prev:
             page > 1
-              ? `/auctions?${searchParams && searchParams + "&"}page=${
+              ? `/listings?${searchParams && searchParams + "&"}page=${
                   page - 1
                 }&limit=${limit}`
               : null,
           next:
             page < totalPages
-              ? `/auctions?${searchParams && searchParams + "&"}page=${
+              ? `/listings?${searchParams && searchParams + "&"}page=${
                   page + 1
                 }&limit=${limit}`
               : null,
@@ -155,13 +192,13 @@ const getUsersListings = async (req, res, next) => {
       : {};
     const userId = req.params.userId;
 
-    const allAuction = await Listings.find({ user: userId }, filter).populate(
+    const allItems = await Listings.find({ user: userId }, filter).populate(
       "user"
     );
 
     res.status(200).send({
-      message: "All auction retrived",
-      data: allAuction,
+      message: "All Items retrived",
+      data: allItems,
     });
   } catch (error) {
     next(error);
@@ -194,19 +231,19 @@ const getUsersWonAuction = async (req, res, next) => {
 //route GET/api/listings/:id
 //access public
 
-const getSingleAuction = async (req, res, next) => {
+const getSingleItem = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const auction = await Listings.findOne({ _id: id }).populate("user");
+    const item = await Listings.findOne({ _id: id }).populate("user");
 
-    if (!auction) {
-      throw newCustomError(404, "Auction not found");
+    if (!item) {
+      throw newCustomError(404, "Item not found");
     }
 
     res.status(200).send({
-      message: "Auction data retrived",
-      data: auction,
+      message: "Item data retrived",
+      data: item,
     });
   } catch (error) {
     next(error);
@@ -217,26 +254,26 @@ const getSingleAuction = async (req, res, next) => {
 //route patch/api/listings/:id
 //access private
 
-const updateAuction = async (req, res, next) => {
+const updateItem = async (req, res, next) => {
   try {
     const id = req.params.id;
     const updatedBody = req.body;
 
-    const auction = await Listings.findOne({ _id: id });
+    const item = await Listings.findOne({ _id: id });
 
-    if (!auction) {
-      throw newCustomError(404, "Auction not found");
+    if (!item) {
+      throw newCustomError(404, "Item not found");
     }
 
-    const updatedAuction = await Listings.findOneAndUpdate(
+    const updatedItem = await Listings.findOneAndUpdate(
       { _id: id },
       updatedBody,
       { new: true }
     );
 
     res.status(200).send({
-      message: "Auction data updated",
-      data: { auctionId: updatedAuction._id },
+      message: "Item data updated",
+      data: { itemId: updatedItem._id },
     });
   } catch (error) {
     next(error);
@@ -247,20 +284,20 @@ const updateAuction = async (req, res, next) => {
 //route DELETE/api/listings/:id
 //access private
 
-const deleteAuction = async (req, res, next) => {
+const deleteItem = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const auction = await Listings.findOne({ _id: id });
+    const item = await Listings.findOne({ _id: id });
 
-    if (!auction) {
-      throw newCustomError(404, "Auction not found");
+    if (!item) {
+      throw newCustomError(404, "Item not found");
     }
 
     await Listings.deleteOne({ _id: id });
 
     res.status(200).send({
-      message: "Auction deleted successfully",
+      message: "Item deleted successfully",
     });
   } catch (error) {
     next(error);
@@ -268,11 +305,13 @@ const deleteAuction = async (req, res, next) => {
 };
 
 module.exports = {
-  createAuction,
-  getAllAuctions,
+  uploadImage,
+  deleteImage,
+  listAnItem,
+  getAllListings,
   getUsersListings,
   getUsersWonAuction,
-  getSingleAuction,
-  updateAuction,
-  deleteAuction,
+  getSingleItem,
+  updateItem,
+  deleteItem,
 };

@@ -60,8 +60,8 @@ const connectAndOnboardUser = async (req, res, next) => {
 
     const accountLinks = await stripe.accountLinks.create({
       account: account.id,
-      refresh_url: "http://localhost:5173/dashboard/profile",
-      return_url: "http://localhost:5173/dashboard/profile",
+      refresh_url: `${req.headers.origin}/dashboard/profile`,
+      return_url: `${req.headers.origin}/dashboard/profile`,
       type: "account_onboarding",
     });
 
@@ -147,12 +147,12 @@ const createSecret = async (req, res, next) => {
     const userId = req.user._id;
     const userStripeAccount = await StripeAccount.findOne({ user: userId });
     const { amount } = req.body;
-    const ammountInCent = Math.ceil(Number(amount * 100));
+    const amountInCent = Math.ceil(Number(amount * 100));
     const parcentage = 2 / 100;
-    const applicationFee = Math.round(ammountInCent * parcentage);
+    const applicationFee = Math.round(amountInCent * parcentage);
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: ammountInCent,
+      amount: amountInCent,
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,

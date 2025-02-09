@@ -15,9 +15,12 @@ const createBid = async (req, res, next) => {
     const currentBid = await Bids.findOne({ _id: currentBidId });
     const auctionInfo = await Listing.findOne({ _id: auctionId });
     const userInfo = await User.findOne({ _id: req.user._id });
-    console.log(body);
+
     if (!auctionInfo) {
       throw newCustomError(404, "Auction not found");
+    }
+    if (auctionInfo.status !== "active") {
+      throw newCustomError(401, "Auction is not active");
     }
 
     if (auctionInfo.startingPrice > amount || auctionInfo.highestBid > amount) {
@@ -33,15 +36,18 @@ const createBid = async (req, res, next) => {
     auctionInfo.highestBidder = createdBid.user;
     await auctionInfo.save();
 
-    // marking previous bid as outbidded
-    currentBid.status = "outbidded";
-    await currentBid.save();
-    // sending notification to the previous bidder
-    await generateNotification({
-      recipient: currentBid.user,
-      message: `You are outbidded in auction for ${auctionInfo?.title}`,
-      link: `/auctions/${auctionInfo._id}`,
-    });
+    if (currentBid) {
+      // marking previous bid as outbidded
+      currentBid.status = "outbidded";
+      await currentBid.save();
+
+      // sending notification to the previous bidder
+      await generateNotification({
+        recipient: currentBid.user,
+        message: `You are outbidded in auction for ${auctionInfo?.title}`,
+        link: `/auctions/${auctionInfo._id}`,
+      });
+    }
 
     if (userInfo) {
       createdBid.user = userInfo;
@@ -82,7 +88,6 @@ const getAllBids = async (req, res, next) => {
 const getMyBids = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    console.log(userId);
 
     const bids = await Bids.find({ user: userId })
       .sort({ amount: -1 })

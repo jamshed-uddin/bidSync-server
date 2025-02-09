@@ -48,7 +48,7 @@ const checkEndedAuction = async () => {
             await generateNotification({
               recipient: auction.user,
               message:
-                "Congratulations! Your item is sold. Check the email sent to your email accout for further instructions",
+                "Congratulations! Your item is sold. Check the inbox for an email sent to you with further instructions",
               link: `/auctions/${auction._id}`,
             });
           } else {

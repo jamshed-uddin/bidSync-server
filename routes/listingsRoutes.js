@@ -1,24 +1,28 @@
 const express = require("express");
 const {
-  createAuction,
-  getAllAuctions,
-  getSingleAuction,
-  updateAuction,
-  deleteAuction,
   getUsersListings,
-
   getUsersWonAuction,
+  listAnItem,
+  getAllListings,
+  getSingleItem,
+  updateItem,
+  deleteItem,
+  uploadImage,
+  deleteImage,
 } = require("../controllers/listingsController");
 const { verifyAccess } = require("../middlewares/verifyAccess");
+const upload = require("../middlewares/multerUploadMid");
 const router = express.Router();
 
-router.post("/", verifyAccess, createAuction); //private route
-router.get("/", getAllAuctions);
+router.post("/image/upload", verifyAccess, upload, uploadImage); //private
+router.post("/image/delete", verifyAccess, deleteImage); //private
+router.post("/", verifyAccess, listAnItem); //private route
+router.get("/", getAllListings);
 
-router.get("/:id", getSingleAuction);
+router.get("/:id", getSingleItem);
 router.get("/myListings/:userId", verifyAccess, getUsersListings); //private route
 router.get("/wonAuctions/:userId", verifyAccess, getUsersWonAuction); //private route
-router.patch("/:id", verifyAccess, updateAuction); //private route
-router.delete("/:id", verifyAccess, deleteAuction); //private route
+router.patch("/:id", verifyAccess, updateItem); //private route
+router.delete("/:id", verifyAccess, deleteItem); //private route
 
 module.exports = router;
